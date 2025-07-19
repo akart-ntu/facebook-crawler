@@ -9,7 +9,6 @@ def loop_to_check(
     timeout=6,
     message="",
     exception_handler=None,
-    reload_on_timeout=True,
 ):
     waited_time = 0
     web_element = None
