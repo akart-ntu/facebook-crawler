@@ -35,52 +35,71 @@ def get_image_urls(page_url, driver: webdriver.Edge):
     image_urls = set()
 
     for a in anchors:
-        start = time.time()
         driver.get(a)  # navigate to link
-        img = loop_to_check(
-            driver,
-            EC.presence_of_element_located((By.TAG_NAME, "img")),
-            timeout=6,
-            message="Waiting for image to be present...",
-        )
+        while True:
+            img = loop_to_check(
+                driver,
+                EC.presence_of_element_located((By.TAG_NAME, "img")),
+                timeout=6,
+                message="Waiting for image to be present...",
+            )
+            if not img:
+                continue
 
-        image_url = img.get_attribute("src")
-        image_urls.add(image_url)  # may change in future to img[?]
+            image_url = img.get_attribute("src")
+            image_urls.add(image_url)  # may change in future to img[?]
 
-        date_element = loop_to_check(
-            driver,
-            EC.presence_of_element_located(
-                (By.XPATH, '//div[./span[@class="xuxw1ft"]]/child::*[1]')
-            ),
-            timeout=6,
-            message="Waiting for date element to be present...",
-        )
+            date_element = loop_to_check(
+                driver,
+                EC.presence_of_element_located(
+                    (By.XPATH, '//div[./span[@class="xuxw1ft"]]//a')
+                ),
+                timeout=6,
+                message="Waiting for date element to be present...",
+            )
+            if not date_element:
+                continue
+            action = webdriver.ActionChains(driver)
+            action.move_to_element(date_element).perform()
 
-        action = webdriver.ActionChains(driver)
-        action.move_to_element(date_element).perform()
+            time.sleep(1)  # wait for the link to be present
 
-        time.sleep(1)  # wait for the link to be present
+            link_element = loop_to_check(
+                driver,
+                EC.presence_of_element_located(
+                    (
+                        By.XPATH,
+                        '//div[./span[@class="xuxw1ft"]]//a',
+                    )
+                ),
+                timeout=6,
+                message="Waiting for post link to be present...",
+            )
+            if not link_element:
+                continue
 
-        link_element = loop_to_check(
-            driver,
-            EC.presence_of_element_located(
-                (
-                    By.XPATH,
-                    '//div[./span[@class="xuxw1ft"]]//a',
-                )
-            ),
-            timeout=6,
-            message="Waiting for post link to be present...",
-        )
+            post_url = link_element.get_attribute("href")
 
-        post_url = link_element.get_attribute("href")
+            if "post" not in post_url:
+                try:
+                    post_link_element = driver.find_element(
+                        By.XPATH, '//a[contains(@href,"post")]'
+                    )
+                    post_url = post_link_element.get_attribute("href")
+                except Exception as e:
+                    # if the found URL is a photo URL
+                    # and there is no post link (showing that it belongs to a post),
+                    # we may neglect it and use the original URL
+                    pass
 
-        with open("images.jsonl", "a") as f:
-            f.write(json.dumps({"url": image_url, "post": post_url}) + "\n")
+            with open("images.jsonl", "a") as f:
+                f.write(json.dumps({"url": image_url, "post": post_url}) + "\n")
 
-        time.sleep(
-            (time.time() - start) + random.choice(range(5, 10))
-        )  # wait for 20 seconds before next iteration
+            time.sleep(
+                random.choice(range(5, 15))
+            )  # wait for 20 seconds before next iteration
+
+            break
 
     print("Found " + str(len(image_urls)) + " urls to images")
     return list(image_urls)

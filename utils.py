@@ -4,9 +4,15 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 
 def loop_to_check(
-    driver: Edge, condition, timeout=6, message="", exception_handler=None
+    driver: Edge,
+    condition,
+    timeout=6,
+    message="",
+    exception_handler=None,
+    reload_on_timeout=True,
 ):
     waited_time = 0
+    web_element = None
     while True:
         start = time.time()
         try:
