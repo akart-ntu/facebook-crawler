@@ -47,26 +47,6 @@ def get_image_urls(page_url, driver: webdriver.Edge):
         image_url = img.get_attribute("src")
         image_urls.add(image_url)  # may change in future to img[?]
 
-        # action_button = loop_to_check(
-        #     driver,
-        #     EC.element_to_be_clickable(
-        #         (By.XPATH, '//div[@aria-label="Hành động với bài viết này"]')
-        #     ),
-        #     timeout=6,
-        #     message="Waiting for post action button to be present...",
-        # )
-        # action_button.click()
-
-        # embed_button = loop_to_check(
-        #     driver,
-        #     EC.element_to_be_clickable(
-        #         (By.XPATH, '//div[@role="menuitem" and .//span[text()="Nhúng"]]')
-        #     ),
-        #     timeout=6,
-        #     message="Waiting for embed option to be present...",
-        # )
-        # embed_button.click()
-
         date_element = loop_to_check(
             driver,
             EC.presence_of_element_located(
@@ -78,19 +58,6 @@ def get_image_urls(page_url, driver: webdriver.Edge):
 
         action = webdriver.ActionChains(driver)
         action.move_to_element(date_element).perform()
-
-        # def find_post_exception_handler():
-        #     try:
-        #         link_element = driver.find_element(By.XPATH, '//a[contains(@href, "photo")]')
-
-        # link_element = loop_to_check(
-        #     driver,
-        #     EC.presence_of_element_located(
-        #         (By.XPATH, '//a[contains(@href, "/posts/")]')
-        #     ),
-        #     timeout=6,
-        #     message="Waiting for post link to be present...",
-        # )
 
         time.sleep(1)  # wait for the link to be present
 
@@ -106,24 +73,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
             message="Waiting for post link to be present...",
         )
 
-        # iframe_form = loop_to_check(
-        #     driver,
-        #     EC.presence_of_element_located(
-        #         (By.XPATH, '//input[contains(@value,"iframe")]')
-        #     ),
-        #     timeout=6,
-        #     message="Waiting for embed form to be present...",
-        # )
-        # iframe = iframe_form.get_attribute("value")
-        # post_url = None
-        # for attribute in iframe.split(" "):
-        #     if "src" in attribute:
-        #         post_url = attribute.split('"')[1]
-        #         break
-
         post_url = link_element.get_attribute("href")
-
-        # post_url = driver.find_element(By.XPATH, "//a[contains(@href, '/posts/')]")
 
         with open("images.jsonl", "a") as f:
             f.write(json.dumps({"url": image_url, "post": post_url}) + "\n")
