@@ -1,0 +1,80 @@
+{
+    "data": {
+        "viewer": {
+            "actor": {
+                "__typename": "User",
+                "id": "100007961372295",
+                "name": "Gia B\u1ea3o"
+            },
+            "tab_bookmarks": {
+                "edges": [
+                    {
+                        "node": {
+                            "unread_count": 0,
+                            "bookmarked_node": {
+                                "__typename": "Application",
+                                "id": "4748854339"
+                            },
+                            "last_used_timestamp": 1752396089,
+                            "id": "Ym9va21hcms6MTAwMDA3OTYxMzcyMjk1OjY0NDcxNTQ0NTY1MDkyNDo0NzQ4ODU0MzM5Ojo6OnVua25vd24="
+                        }
+                    },
+                    {
+                        "node": {
+                            "unread_count": 0,
+                            "bookmarked_node": {
+                                "__typename": "Application",
+                                "id": "2392950137"
+                            },
+                            "last_used_timestamp": 1752404353,
+                            "id": "Ym9va21hcms6MTAwMDA3OTYxMzcyMjk1OjY0NDcxNTQ0NTY1MDkyNDoyMzkyOTUwMTM3Ojo6OnVua25vd24="
+                        }
+                    },
+                    {
+                        "node": {
+                            "unread_count": 0,
+                            "bookmarked_node": {
+                                "__typename": "Application",
+                                "id": "1606854132932955"
+                            },
+                            "last_used_timestamp": 1750006194,
+                            "id": "Ym9va21hcms6MTAwMDA3OTYxMzcyMjk1OjY0NDcxNTQ0NTY1MDkyNDoxNjA2ODU0MTMyOTMyOTU1Ojo6OnVua25vd24="
+                        }
+                    },
+                    {
+                        "node": {
+                            "unread_count": 0,
+                            "bookmarked_node": {
+                                "__typename": "Application",
+                                "id": "2361831622"
+                            },
+                            "last_used_timestamp": 1751602422,
+                            "id": "Ym9va21hcms6MTAwMDA3OTYxMzcyMjk1OjY0NDcxNTQ0NTY1MDkyNDoyMzYxODMxNjIyOjo6OnVua25vd24="
+                        }
+                    },
+                    {
+                        "node": {
+                            "unread_count": 0,
+                            "bookmarked_node": {
+                                "__typename": "Application",
+                                "id": "513746992167374"
+                            },
+                            "last_used_timestamp": 1752420531,
+                            "id": "Ym9va21hcms6MTAwMDA3OTYxMzcyMjk1OjY0NDcxNTQ0NTY1MDkyNDo1MTM3NDY5OTIxNjczNzQ6Ojo6dW5rbm93bg=="
+                        }
+                    }
+                ]
+            },
+            "feeds_tab_tooltip": {
+                "nodes": []
+            }
+        }
+    },
+    "extensions": {
+        "server_metadata": {
+            "request_start_time_ms": 1752775197596,
+            "time_at_flush_ms": 1752775197731
+        },
+        "is_final": true
+    }
+}
