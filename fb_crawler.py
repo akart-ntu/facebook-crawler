@@ -30,17 +30,17 @@ def get_image_urls(page_url, driver: webdriver.Edge):
     with open("anchors.txt", "r") as f:
         anchors = f.readlines()
 
-    anchors = [a.strip() for a in anchors if a.strip()]
-
+    anchors = [a.strip().replace("/?type=3", "") for a in anchors if a.strip()]
     image_urls = set()
 
     for a in anchors:
-        driver.get(a)  # navigate to link
+        fbid = a.split("/")[-1]
+        driver.get(f"https://www.facebook.com/photo/?fbid={fbid}")  # navigate to link
         while True:
             img = loop_to_check(
                 driver,
                 EC.presence_of_element_located((By.TAG_NAME, "img")),
-                timeout=6,
+                timeout=120,
                 message="Waiting for image to be present...",
             )
             if not img:
@@ -54,7 +54,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
                 EC.presence_of_element_located(
                     (By.XPATH, '//div[./span[@class="xuxw1ft"]]//a')
                 ),
-                timeout=6,
+                timeout=120,
                 message="Waiting for date element to be present...",
             )
             if not date_element:
@@ -72,7 +72,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
                         '//div[./span[@class="xuxw1ft"]]//a',
                     )
                 ),
-                timeout=6,
+                timeout=120,
                 message="Waiting for post link to be present...",
             )
             if not link_element:

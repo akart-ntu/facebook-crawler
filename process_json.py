@@ -4,37 +4,61 @@ import os
 import requests
 import imghdr
 
+from tqdm import tqdm
+
 
 def download_image(url, basename):
     response = requests.get(url)
     if response.status_code != 200:
         raise ConnectionError
-    extension = imghdr.what(file=None, h=response.content)
+    if ".jpg" in url:
+        extension = "jpg"
+    elif ".png" in url:
+        extension = "png"
+    else:
+        extension = imghdr.what(file=None, h=response.content)
     save_path = f"{basename}.{extension}"
     with open(save_path, "wb") as f:
         f.write(response.content)
 
 
-with open("images.jsonl", "r") as f:
-    content = f.readlines()
+def download_images(
+    file_name,
+    start_index,
+    end_index,
+    save_path="Memes/sudlokomteen",
+):
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
 
-post_img = {}
+    with open(file_name, "r") as f:
+        content = f.readlines()
+
+    post_img = {}
+
+    for lines in tqdm(
+        content[start_index:end_index], desc="Extract single image posts..."
+    ):
+        data = json.loads(lines)
+        image_url = data.get("url")
+        post_url = data.get("post")
+
+        if post_url not in post_img:
+            post_img[post_url] = []
+        post_img[post_url].append(image_url)
+
+    with open(f"{save_path}/post_with_one_image.jsonl", "w") as f:
+        counter = 1441
+        for post, images in tqdm(post_img.items(), desc="Download images..."):
+            if len(images) == 1:
+                f.write(json.dumps({"post": post, "url": images[0]}) + "\n")
+                basename = f"image_{counter}"
+                download_image(images[0], os.path.join(save_path, basename))
+                counter += 1
 
 
-for lines in content:
-    data = json.loads(lines)
-    image_url = data.get("url")
-    post_url = data.get("post")
-
-    if post_url not in post_img:
-        post_img[post_url] = []
-    post_img[post_url].append(image_url)
-
-with open("post_with_one_image.jsonl", "w") as f:
-    counter = 0
-    for post, images in post_img.items():
-        if len(images) == 1:
-            f.write(json.dumps({"post": post, "url": images[0]}) + "\n")
-            basename = f"image_{counter}"
-            download_image(images[0], os.path.join("Memes", "sudlokomteen", basename))
-            counter += 1
+start_index = 1893
+end_index = -1
+file_name = "images.jsonl"
+save_path = "Memes/sudlokomteen_2"
+download_images(file_name, start_index, end_index, save_path)
