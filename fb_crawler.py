@@ -19,16 +19,26 @@ prefs = {"profile.default_content_setting_values.notifications": 2}
 options.add_experimental_option("prefs", prefs)
 
 
+def get_object_id_from_url(url: str):
+    url_components = url.replace("https://www.facebook.com/", "").split("/")
+    if url_components[0] == "groups":
+        return url_components[1]
+    return url_components[0]
+
+
 # get all the image urls from the page
 def get_image_urls(page_url, driver: webdriver.Edge):
-    page_id = page_url.split("/")[-2]
+    page_id = get_object_id_from_url(page_url)
+    os.makedirs("Memes/" + page_id, exist_ok=True)
+
+    save_path = os.path.join("Memes", page_id)
     driver.get(page_url)
     time.sleep(5)
 
-    # anchors = retrieve_anchor_elements(driver, page_id)
+    anchors = retrieve_anchor_elements(driver, os.path.join(save_path, "anchors.txt"))
 
-    with open("anchors.txt", "r") as f:
-        anchors = f.readlines()
+    # with open("anchors.txt", "r") as f:
+    #     anchors = f.readlines()
 
     anchors = [a.strip().replace("/?type=3", "") for a in anchors if a.strip()]
     image_urls = set()
@@ -105,15 +115,14 @@ def get_image_urls(page_url, driver: webdriver.Edge):
     return list(image_urls)
 
 
-def retrieve_anchor_elements(driver: webdriver.Edge, page_id):
+def retrieve_anchor_elements(driver: webdriver.Edge, save_path="anchors.txt"):
     SCROLL_PAUSE_TIME = 3
     # Get scroll height
     last_height = driver.execute_script("return document.body.scrollHeight")
 
     # Create a file to store anchors
-    if not os.path.exists("anchors.txt"):
-        with open("anchors.txt", "w") as f:
-            f.write("")
+    if not os.path.exists(save_path):
+        open(save_path, "x").close()
 
     while True:
         # Scroll down to bottom
@@ -126,7 +135,7 @@ def retrieve_anchor_elements(driver: webdriver.Edge, page_id):
         ]
 
         for a in temp_anchors:
-            with open("anchors.txt", "r") as f:
+            with open(save_path, "r") as f:
                 existing_anchors = f.readlines()
             existing_anchors = [x.strip() for x in existing_anchors]
 
@@ -228,11 +237,6 @@ def main(page_urls):
 
         for page_url in page_urls:
 
-            if "groups" in page_url:
-                page_url = page_url + "/media/photos"
-            else:
-                page_url = page_url + "/photos"
-
             image_urls = get_image_urls(page_url, driver)
 
             path = os.getcwd()
@@ -254,7 +258,10 @@ if __name__ == "__main__":
     os.environ["password"] = "giabao0120"
 
     urls = [
-        "https://www.facebook.com/sudlokomteen",
+        # "https://www.facebook.com/groups/541258227115168/media/photos",
+        # "https://www.facebook.com/groups/1840261382820816/media/photos",
+        # "https://www.facebook.com/groups/925681821821900/media/photos",
+        "https://www.facebook.com/Choptalokyurueai/photos",
     ]
 
     main(urls)
