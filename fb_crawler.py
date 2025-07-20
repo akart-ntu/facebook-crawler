@@ -217,13 +217,6 @@ def main(page_urls):
         time.sleep(0.1)
         password.send_keys(letter)
 
-    # target the login button and click it
-    # button = (
-    #     WebDriverWait(driver, 2)
-    #     .until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']")))
-    #     .click()
-    # )
-
     while True:
         try:
             _ = driver.find_element(By.XPATH, '//div[@aria-label="Tạo bài viết"]')
