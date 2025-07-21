@@ -1,6 +1,7 @@
 # imports here
 import json
 import random
+from urllib.parse import parse_qs, urlparse
 from selenium import webdriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -31,26 +32,36 @@ def get_image_urls(page_url, driver: webdriver.Edge):
     page_id = get_object_id_from_url(page_url)
     os.makedirs("Memes/" + page_id, exist_ok=True)
 
-    save_path = os.path.join("Memes", page_id)
+    base_path = os.path.join("Memes", page_id)
+    jsonl_path = os.path.join(base_path, "images.jsonl")
+    achors_path = os.path.join(base_path, "anchors.txt")
     driver.get(page_url)
     time.sleep(5)
 
-    anchors = retrieve_anchor_elements(driver, os.path.join(save_path, "anchors.txt"))
+    # anchors = retrieve_anchor_elements(driver, os.path.join(save_path, "anchors.txt"))
 
-    # with open("anchors.txt", "r") as f:
-    #     anchors = f.readlines()
+    with open(achors_path, "r") as f:
+        anchors = f.readlines()
 
     anchors = [a.strip().replace("/?type=3", "") for a in anchors if a.strip()]
     image_urls = set()
 
     for a in anchors:
-        fbid = a.split("/")[-1]
-        driver.get(f"https://www.facebook.com/photo/?fbid={fbid}")  # navigate to link
+        a = a.replace("/?type=3", "").strip()
+        parsed_url = urlparse(a)
+        query_params = parse_qs(parsed_url.query)
+        if "fbid" in query_params:
+            fbid = query_params["fbid"][0]
+        else:
+            # if fbid is not in query params, extract it from the path
+            fbid = a.split("/")[-1]
+        # driver.get(f"https://www.facebook.com/photo/?fbid={fbid}")  # navigate to link
+        driver.get(a)
         while True:
             img = loop_to_check(
                 driver,
                 EC.presence_of_element_located((By.TAG_NAME, "img")),
-                timeout=120,
+                timeout=6,
                 message="Waiting for image to be present...",
             )
             if not img:
@@ -64,7 +75,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
                 EC.presence_of_element_located(
                     (By.XPATH, '//div[./span[@class="xuxw1ft"]]//a')
                 ),
-                timeout=120,
+                timeout=6,
                 message="Waiting for date element to be present...",
             )
             if not date_element:
@@ -82,7 +93,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
                         '//div[./span[@class="xuxw1ft"]]//a',
                     )
                 ),
-                timeout=120,
+                timeout=6,
                 message="Waiting for post link to be present...",
             )
             if not link_element:
@@ -102,7 +113,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
                     # we may neglect it and use the original URL
                     pass
 
-            with open("images.jsonl", "a") as f:
+            with open(jsonl_path, "a") as f:
                 f.write(json.dumps({"url": image_url, "post": post_url}) + "\n")
 
             time.sleep(
@@ -140,7 +151,7 @@ def retrieve_anchor_elements(driver: webdriver.Edge, save_path="anchors.txt"):
             existing_anchors = [x.strip() for x in existing_anchors]
 
             if a not in existing_anchors:
-                with open("anchors.txt", "a") as f:
+                with open(save_path, "a") as f:
                     f.write(a.strip() + "\n")
 
         current_photo_containers = driver.find_elements(
@@ -182,7 +193,7 @@ def retrieve_anchor_elements(driver: webdriver.Edge, save_path="anchors.txt"):
                 break
             last_height = new_height
 
-    with open("anchors.txt", "r") as f:
+    with open(save_path, "r") as f:
         anchors = f.readlines()
     anchors = [a.strip() for a in anchors if a.strip()]
 
@@ -237,25 +248,14 @@ def main(page_urls):
 
         for page_url in page_urls:
 
-            image_urls = get_image_urls(page_url, driver)
-
-            path = os.getcwd()
-            path = os.path.join(path, "Memes", page_url.split("/")[-2])
-
-            if not os.path.exists(path):
-                os.makedirs(path)
-
-            counter = 1
-            for image_url in image_urls:
-                download_image(image_url, os.path.join(path, str(counter)))
-                counter += 1
+            get_image_urls(page_url, driver)
 
         driver.quit()
 
 
 if __name__ == "__main__":
     os.environ["username"] = "gbao.scientist@gmail.com"
-    os.environ["password"] = "giabao0120"
+    os.environ["password"] = ""
 
     urls = [
         # "https://www.facebook.com/groups/541258227115168/media/photos",

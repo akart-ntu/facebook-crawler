@@ -26,6 +26,7 @@ def download_images(
     file_name,
     start_index,
     end_index,
+    save_index=0,
     save_path="Memes/sudlokomteen",
 ):
     if not os.path.exists(save_path):
@@ -48,17 +49,17 @@ def download_images(
         post_img[post_url].append(image_url)
 
     with open(f"{save_path}/post_with_one_image.jsonl", "w") as f:
-        counter = 1441
         for post, images in tqdm(post_img.items(), desc="Download images..."):
             if len(images) == 1:
                 f.write(json.dumps({"post": post, "url": images[0]}) + "\n")
-                basename = f"image_{counter}"
+                basename = f"image_{save_index}"
                 download_image(images[0], os.path.join(save_path, basename))
-                counter += 1
+                save_index += 1
 
 
-start_index = 1893
+start_index = 0
 end_index = -1
-file_name = "images.jsonl"
-save_path = "Memes/sudlokomteen_2"
-download_images(file_name, start_index, end_index, save_path)
+save_index = 0
+file_name = "Memes/Choptalokyurueai/images.jsonl"
+save_path = "Memes/Choptalokyurueai/choptalokyurueai_1"
+download_images(file_name, start_index, end_index, save_index, save_path)
