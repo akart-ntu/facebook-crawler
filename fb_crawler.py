@@ -8,8 +8,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 import time
 import os
-import requests
-import imghdr
 
 from utils import loop_to_check
 
@@ -55,8 +53,8 @@ def get_image_urls(page_url, driver: webdriver.Edge):
         else:
             # if fbid is not in query params, extract it from the path
             fbid = a.split("/")[-1]
-        # driver.get(f"https://www.facebook.com/photo/?fbid={fbid}")  # navigate to link
-        driver.get(a)
+        driver.get(f"https://www.facebook.com/photo/?fbid={fbid}")  # navigate to link
+        # driver.get(a)
         while True:
             img = loop_to_check(
                 driver,
@@ -200,17 +198,6 @@ def retrieve_anchor_elements(driver: webdriver.Edge, save_path="anchors.txt"):
     print(f"Collected {len(anchors)}  anchor elements from the photos.")
 
     return anchors
-
-
-# download the image given the url and basename
-def download_image(url, basename):
-    response = requests.get(url)
-    if response.status_code != 200:
-        raise ConnectionError
-    extension = imghdr.what(file=None, h=response.content)
-    save_path = f"{basename}.{extension}"
-    with open(save_path, "wb") as f:
-        f.write(response.content)
 
 
 def main(page_urls):
