@@ -258,10 +258,15 @@ if __name__ == "__main__":
     os.environ["password"] = ""
 
     urls = [
-        # "https://www.facebook.com/groups/541258227115168/media/photos",
-        # "https://www.facebook.com/groups/1840261382820816/media/photos",
-        # "https://www.facebook.com/groups/925681821821900/media/photos",
-        "https://www.facebook.com/Choptalokyurueai/photos",
+        
+        "https://www.facebook.com/groups/541258227115168/media/photos",
+        "https://www.facebook.com/groups/1840261382820816/media/photos",
+        "https://www.facebook.com/groups/925681821821900/media/photos",
+        "https://www.facebook.com/groups/1031913480819320/media/photos",
+        "https://www.facebook.com/groups/244100150096197/media/photos",
+        "https://www.facebook.com/groups/657799245861367/media/photos",
+        "https://www.facebook.com/groups/925681821821900/media/photos"
+        # "https://www.facebook.com/Choptalokyurueai/photos",
     ]
 
     main(urls)
