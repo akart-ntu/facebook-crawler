@@ -36,7 +36,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
     driver.get(page_url)
     time.sleep(5)
 
-    # anchors = retrieve_anchor_elements(driver, os.path.join(save_path, "anchors.txt"))
+    # anchors = retrieve_anchor_elements(driver, os.path.join(achors_path))
 
     with open(achors_path, "r") as f:
         anchors = f.readlines()
@@ -53,6 +53,11 @@ def get_image_urls(page_url, driver: webdriver.Edge):
         else:
             # if fbid is not in query params, extract it from the path
             fbid = a.split("/")[-1]
+            if fbid.isdigit():
+                fbid = fbid.strip()
+            else:
+                print(f"Invalid fbid in URL: {a}")
+                continue
         driver.get(f"https://www.facebook.com/photo/?fbid={fbid}")  # navigate to link
         # driver.get(a)
         while True:
@@ -153,43 +158,35 @@ def retrieve_anchor_elements(driver: webdriver.Edge, save_path="anchors.txt"):
                     f.write(a.strip() + "\n")
 
         current_photo_containers = driver.find_elements(
-            By.XPATH, '//div[@class="x1e56ztr"]/div[1]/div'
+            By.XPATH, '//div[div[@class="x1yztbdb"]]/div[2]/div'
         )
 
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
         # Wait to load page
         waited_time = 0
-        changed_number = 0
         while True:
+            time.sleep(SCROLL_PAUSE_TIME)
             after_photo_containers = driver.find_elements(
-                By.XPATH, '//div[@class="x1e56ztr"]/div[1]/div'
+                By.XPATH, '//div[div[@class="x1yztbdb"]]/div[2]/div'
             )
             if len(after_photo_containers) == len(current_photo_containers):
                 try:
-                    driver.find_element(By.XPATH, '//div[@class="x1gslohp"]')
+                    driver.find_element(By.XPATH, '//div[@class="x1a2a7pz"]')
                     continue
                 except Exception as e:
                     break
             elif len(after_photo_containers) > len(current_photo_containers):
-                changed_number = len(after_photo_containers) - len(
-                    current_photo_containers
-                )
                 break
-            time.sleep(SCROLL_PAUSE_TIME)
             waited_time += SCROLL_PAUSE_TIME
-            if waited_time > 300:  # 5 minutes
+            if waited_time > 120:
                 print("Waited too long for new images, breaking...")
                 break
 
-        # Calculate new scroll height and compare with last scroll height
-        if changed_number < 3:
+        new_height = driver.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
             break
-        else:
-            new_height = driver.execute_script("return document.body.scrollHeight")
-            if new_height == last_height:
-                break
-            last_height = new_height
+        last_height = new_height
 
     with open(save_path, "r") as f:
         anchors = f.readlines()
@@ -238,6 +235,7 @@ def main(page_urls):
             get_image_urls(page_url, driver)
 
         driver.quit()
+        break
 
 
 if __name__ == "__main__":
@@ -245,7 +243,6 @@ if __name__ == "__main__":
     os.environ["password"] = ""
 
     urls = [
-        
         "https://www.facebook.com/groups/541258227115168/media/photos",
         "https://www.facebook.com/groups/1840261382820816/media/photos",
         "https://www.facebook.com/groups/925681821821900/media/photos",
@@ -253,7 +250,9 @@ if __name__ == "__main__":
         "https://www.facebook.com/groups/244100150096197/media/photos",
         "https://www.facebook.com/groups/657799245861367/media/photos",
         "https://www.facebook.com/groups/925681821821900/media/photos"
+        "https://www.facebook.com/groups/3225983034339087/media/photos",
         # "https://www.facebook.com/Choptalokyurueai/photos",
+        # "https://www.facebook.com/sudlokomteen/photos"
     ]
 
     main(urls)

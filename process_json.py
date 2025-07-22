@@ -61,5 +61,5 @@ start_index = 0
 end_index = -1
 save_index = 0
 file_name = "Memes/Choptalokyurueai/images.jsonl"
-save_path = "Memes/Choptalokyurueai/choptalokyurueai_1"
+save_path = "Memes/Choptalokyurueai/choptalokyurueai_2"
 download_images(file_name, start_index, end_index, save_index, save_path)
