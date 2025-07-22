@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 import time
 import os
-
+from tqdm import tqdm
 from utils import loop_to_check
 
 
@@ -44,7 +44,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
     anchors = [a.strip().replace("/?type=3", "") for a in anchors if a.strip()]
     image_urls = set()
 
-    for a in anchors:
+    for a in tqdm(anchors, desc="Downloading images from anchors..."):
         a = a.replace("/?type=3", "").strip()
         parsed_url = urlparse(a)
         query_params = parse_qs(parsed_url.query)
