@@ -10,6 +10,7 @@ import time
 import os
 from tqdm import tqdm
 from utils import loop_to_check
+from seleniumbase import get_driver
 
 
 # code by pythonjar, not me
@@ -198,7 +199,8 @@ def retrieve_anchor_elements(driver: webdriver.Edge, save_path="anchors.txt"):
 
 
 def main(page_urls):
-    driver = webdriver.Edge(options=options)
+    driver = get_driver("edge")
+    # driver = webdriver.Edge(options=options)
 
     # open the webpage
     driver.get("http://www.facebook.com")
