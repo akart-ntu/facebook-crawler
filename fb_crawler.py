@@ -37,10 +37,11 @@ def get_image_urls(page_url, driver: webdriver.Edge):
     driver.get(page_url)
     time.sleep(5)
 
-    # anchors = retrieve_anchor_elements(driver, os.path.join(achors_path))
-
-    with open(achors_path, "r") as f:
-        anchors = f.readlines()
+    if os.path.exists(achors_path):
+        with open(achors_path, "r") as f:
+            anchors = f.readlines()
+    else:
+        anchors = retrieve_anchor_elements(driver, achors_path)
 
     anchors = [a.strip().replace("/?type=3", "") for a in anchors if a.strip()]
     image_urls = set()
