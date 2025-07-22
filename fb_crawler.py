@@ -172,6 +172,8 @@ def retrieve_anchor_elements(driver: webdriver.Edge, save_path="anchors.txt"):
             after_photo_containers = driver.find_elements(
                 By.XPATH, '//div[div[@class="x1yztbdb"]]/div[2]/div'
             )
+            if len(after_photo_containers) >= 9000:
+                break
             if len(after_photo_containers) == len(current_photo_containers):
                 try:
                     driver.find_element(By.XPATH, '//div[@class="x1a2a7pz"]')
@@ -242,11 +244,10 @@ def main(page_urls):
 
 
 if __name__ == "__main__":
-    os.environ["username"] = "gbao.scientist@gmail.com"
+    os.environ["username"] = "quanhust03@gmail.com"
     os.environ["password"] = ""
 
     urls = [
-        "https://www.facebook.com/groups/541258227115168/media/photos",
         "https://www.facebook.com/groups/1840261382820816/media/photos",
         "https://www.facebook.com/groups/925681821821900/media/photos",
         "https://www.facebook.com/groups/1031913480819320/media/photos",
