@@ -24,7 +24,7 @@ urls = ["list of URLs pointing to the photo folder of the groups"
 
 ## Run the crawler
 
-```python
+```bash
 python fb_crawler.py
 ```
 
