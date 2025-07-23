@@ -162,6 +162,9 @@ def retrieve_anchor_elements(driver: webdriver.Edge, save_path="anchors.txt"):
         current_photo_containers = driver.find_elements(
             By.XPATH, '//div[div[@class="x1yztbdb"]]/div[2]/div'
         )
+        
+        if len(current_photo_containers) >= 9000:
+            break
 
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
@@ -172,8 +175,6 @@ def retrieve_anchor_elements(driver: webdriver.Edge, save_path="anchors.txt"):
             after_photo_containers = driver.find_elements(
                 By.XPATH, '//div[div[@class="x1yztbdb"]]/div[2]/div'
             )
-            if len(after_photo_containers) >= 9000:
-                break
             if len(after_photo_containers) == len(current_photo_containers):
                 try:
                     driver.find_element(By.XPATH, '//div[@class="x1a2a7pz"]')
