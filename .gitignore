@@ -2,3 +2,5 @@ test.*
 Memes
 
 .DS_Store
+
+__pycache__/
