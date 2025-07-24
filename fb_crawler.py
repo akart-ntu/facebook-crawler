@@ -34,6 +34,9 @@ def get_image_urls(page_url, driver: webdriver.Edge):
     base_path = os.path.join("Memes", page_id)
     jsonl_path = os.path.join(base_path, "images.jsonl")
     achors_path = os.path.join(base_path, "anchors.txt")
+    crawled_path = os.path.join(base_path, "crawled.txt")
+    if not os.path.exists(crawled_path):
+        open(crawled_path, "w").close()
     driver.get(page_url)
     time.sleep(5)
 
@@ -60,8 +63,9 @@ def get_image_urls(page_url, driver: webdriver.Edge):
             else:
                 print(f"Invalid fbid in URL: {a}")
                 continue
-        driver.get(f"https://www.facebook.com/photo/?fbid={fbid}")  # navigate to link
+        # driver.get(f"https://www.facebook.com/photo/?fbid={fbid}")  # navigate to link
         # driver.get(a)
+        driver.get(f"https://www.facebook.com/photo.php?fbid={fbid}")
         while True:
             img = loop_to_check(
                 driver,
@@ -127,6 +131,8 @@ def get_image_urls(page_url, driver: webdriver.Edge):
 
             break
 
+        with open(crawled_path, "a") as f:
+            f.write(a.strip() + "\n")
     print("Found " + str(len(image_urls)) + " urls to images")
     return list(image_urls)
 
@@ -162,7 +168,7 @@ def retrieve_anchor_elements(driver: webdriver.Edge, save_path="anchors.txt"):
         current_photo_containers = driver.find_elements(
             By.XPATH, '//div[div[@class="x1yztbdb"]]/div[2]/div'
         )
-        
+
         if len(current_photo_containers) >= 9000:
             break
 
@@ -245,8 +251,10 @@ def main(page_urls):
 
 
 if __name__ == "__main__":
-    os.environ["username"] = "quanhust03@gmail.com"
+    os.environ["username"] = "giabao.cao.ntu@gmail"
     os.environ["password"] = ""
+    # quanhust03@gmail.com
+    # thapcam2trung
 
     urls = [
         "https://www.facebook.com/groups/1840261382820816/media/photos",

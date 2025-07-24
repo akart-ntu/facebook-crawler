@@ -60,6 +60,6 @@ def download_images(
 start_index = 0
 end_index = -1
 save_index = 0
-file_name = "Memes/Choptalokyurueai/images.jsonl"
-save_path = "Memes/Choptalokyurueai/choptalokyurueai_2"
+file_name = "Memes/1840261382820816/images.jsonl"
+save_path = "Memes/1840261382820816/1840261382820816_1"
 download_images(file_name, start_index, end_index, save_index, save_path)
