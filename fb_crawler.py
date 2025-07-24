@@ -14,9 +14,7 @@ from seleniumbase import get_driver
 
 
 # code by pythonjar, not me
-options = webdriver.EdgeOptions()
-prefs = {"profile.default_content_setting_values.notifications": 2}
-options.add_experimental_option("prefs", prefs)
+options = webdriver.Firefox()
 
 
 def get_object_id_from_url(url: str):
@@ -27,7 +25,7 @@ def get_object_id_from_url(url: str):
 
 
 # get all the image urls from the page
-def get_image_urls(page_url, driver: webdriver.Edge):
+def get_image_urls(page_url, driver: webdriver.Firefox):
     page_id = get_object_id_from_url(page_url)
     os.makedirs("Memes/" + page_id, exist_ok=True)
 
@@ -137,7 +135,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
     return list(image_urls)
 
 
-def retrieve_anchor_elements(driver: webdriver.Edge, save_path="anchors.txt"):
+def retrieve_anchor_elements(driver: webdriver.Firefox, save_path="anchors.txt"):
     SCROLL_PAUSE_TIME = 3
     # Get scroll height
     last_height = driver.execute_script("return document.body.scrollHeight")
@@ -209,8 +207,7 @@ def retrieve_anchor_elements(driver: webdriver.Edge, save_path="anchors.txt"):
 
 
 def main(page_urls):
-    driver = get_driver("edge")
-    # driver = webdriver.Edge(options=options)
+    driver = get_driver("firefox")
 
     # open the webpage
     driver.get("http://www.facebook.com")
