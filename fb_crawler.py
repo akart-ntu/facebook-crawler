@@ -67,14 +67,31 @@ def get_image_urls(page_url, driver: webdriver.Edge):
         # driver.get(a)
         driver.get(f"https://www.facebook.com/photo.php?fbid={fbid}")
         while True:
-            img = loop_to_check(
-                driver,
-                EC.presence_of_element_located((By.TAG_NAME, "img")),
-                timeout=6,
-                message="Waiting for image to be present...",
-            )
-            if not img:
-                continue
+
+            def check_link_valid():
+                try:
+                    driver.find_element(By.XPATH, '//span[contains(text(), "tiếc")]')
+                except Exception as e:
+                    try:
+                        driver.find_element(
+                            By.XPATH, '//span[contains(text(), "chặn")]'
+                        )
+                    except Exception as e:
+                        return
+                raise ValueError("Post invalid or rate limit exceeded.")
+
+            try:
+                img = loop_to_check(
+                    driver,
+                    EC.presence_of_element_located((By.TAG_NAME, "img")),
+                    timeout=6,
+                    exception_handler=check_link_valid,
+                    message="Waiting for image to be present...",
+                )
+                if not img:
+                    continue
+            except ValueError as e:
+                break
 
             image_url = img.get_attribute("src")
             image_urls.add(image_url)  # may change in future to img[?]

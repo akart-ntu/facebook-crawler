@@ -6,6 +6,8 @@ import imghdr
 
 from tqdm import tqdm
 
+from utils import remove_query_params
+
 
 def download_image(url, basename):
     response = requests.get(url)
@@ -43,6 +45,14 @@ def download_images(
         data = json.loads(lines)
         image_url = data.get("url")
         post_url = data.get("post")
+
+        if "scontent.fsin" not in image_url:
+            continue
+
+        if file_name.split("/")[1] not in post_url:
+            continue
+
+        post_url = remove_query_params(post_url)
 
         if post_url not in post_img:
             post_img[post_url] = []
