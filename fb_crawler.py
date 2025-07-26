@@ -69,15 +69,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
         while True:
 
             def check_link_valid():
-                try:
-                    driver.find_element(By.XPATH, '//span[contains(text(), "tiếc")]')
-                except Exception as e:
-                    try:
-                        driver.find_element(
-                            By.XPATH, '//span[contains(text(), "chặn")]'
-                        )
-                    except Exception as e:
-                        return
+                driver.find_element(By.XPATH, '//span[contains(text(), "tiếc")]')
                 raise ValueError("Post invalid or rate limit exceeded.")
 
             try:
@@ -268,21 +260,23 @@ def main(page_urls):
 
 
 if __name__ == "__main__":
-    os.environ["username"] = "giabao.cao.ntu@gmail"
+    os.environ["username"] = "gbao.scientist@gmail.com"
     os.environ["password"] = ""
     # quanhust03@gmail.com
     # thapcam2trung
 
     urls = [
-        "https://www.facebook.com/groups/1840261382820816/media/photos",
-        "https://www.facebook.com/groups/925681821821900/media/photos",
-        "https://www.facebook.com/groups/1031913480819320/media/photos",
-        "https://www.facebook.com/groups/244100150096197/media/photos",
-        "https://www.facebook.com/groups/657799245861367/media/photos",
-        "https://www.facebook.com/groups/925681821821900/media/photos"
-        "https://www.facebook.com/groups/3225983034339087/media/photos",
+        "https://www.facebook.com/groups/541258227115168/media/photos",
+        # "https://www.facebook.com/groups/1840261382820816/media/photos",
+        # "https://www.facebook.com/groups/925681821821900/media/photos",
+        # "https://www.facebook.com/groups/1031913480819320/media/photos",
+        # "https://www.facebook.com/groups/244100150096197/media/photos",
+        # "https://www.facebook.com/groups/657799245861367/media/photos",
+        # "https://www.facebook.com/groups/925681821821900/media/photos"
+        # "https://www.facebook.com/groups/3225983034339087/media/photos",
         # "https://www.facebook.com/Choptalokyurueai/photos",
         # "https://www.facebook.com/sudlokomteen/photos"
     ]
 
     main(urls)
+ 
