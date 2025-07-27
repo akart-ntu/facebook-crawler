@@ -1,8 +1,25 @@
 import time
 from typing import Optional
 from urllib.parse import urlparse, urlunparse
+import requests
 from selenium.webdriver import Edge
 from selenium.webdriver.support.wait import WebDriverWait
+import imghdr
+
+
+def download_image(url, basename):
+    response = requests.get(url)
+    if response.status_code != 200:
+        raise ConnectionError
+    if ".jpg" in url:
+        extension = "jpg"
+    elif ".png" in url:
+        extension = "png"
+    else:
+        extension = imghdr.what(file=None, h=response.content)
+    save_path = f"{basename}.{extension}"
+    with open(save_path, "wb") as f:
+        f.write(response.content)
 
 
 def loop_to_check(

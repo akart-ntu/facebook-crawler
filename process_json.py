@@ -1,27 +1,10 @@
 import json
 import os
 
-import requests
-import imghdr
 
 from tqdm import tqdm
 
-from utils import remove_query_params
-
-
-def download_image(url, basename):
-    response = requests.get(url)
-    if response.status_code != 200:
-        raise ConnectionError
-    if ".jpg" in url:
-        extension = "jpg"
-    elif ".png" in url:
-        extension = "png"
-    else:
-        extension = imghdr.what(file=None, h=response.content)
-    save_path = f"{basename}.{extension}"
-    with open(save_path, "wb") as f:
-        f.write(response.content)
+from utils import download_image, remove_query_params
 
 
 def download_images(
@@ -63,13 +46,16 @@ def download_images(
             if len(images) == 1:
                 f.write(json.dumps({"post": post, "url": images[0]}) + "\n")
                 basename = f"image_{save_index}"
-                download_image(images[0], os.path.join(save_path, basename))
-                save_index += 1
+                try:
+                    download_image(images[0], os.path.join(save_path, basename))
+                    save_index += 1
+                except Exception as e:
+                    pass  # skip if any error occurs
 
 
 start_index = 0
 end_index = -1
 save_index = 0
 file_name = "Memes/1840261382820816/images.jsonl"
-save_path = "Memes/1840261382820816/1840261382820816_1"
+save_path = "Memes/1840261382820816/images"
 download_images(file_name, start_index, end_index, save_index, save_path)
