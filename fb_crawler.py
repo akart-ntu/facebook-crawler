@@ -31,18 +31,18 @@ def get_image_urls(page_url, driver: webdriver.Firefox):
 
     base_path = os.path.join("Memes", page_id)
     jsonl_path = os.path.join(base_path, "images.jsonl")
-    achors_path = os.path.join(base_path, "anchors.txt")
+    anchors_path = os.path.join(base_path, "anchors.txt")
     crawled_path = os.path.join(base_path, "crawled.txt")
     if not os.path.exists(crawled_path):
         open(crawled_path, "w").close()
     driver.get(page_url)
     time.sleep(5)
 
-    if os.path.exists(achors_path):
-        with open(achors_path, "r") as f:
+    if os.path.exists(anchors_path):
+        with open(anchors_path, "r") as f:
             anchors = f.readlines()
     else:
-        anchors = retrieve_anchor_elements(driver, achors_path)
+        anchors = retrieve_anchor_elements(driver, anchors_path)
 
     anchors = [a.strip().replace("/?type=3", "") for a in anchors if a.strip()]
     image_urls = set()
@@ -65,14 +65,23 @@ def get_image_urls(page_url, driver: webdriver.Firefox):
         # driver.get(a)
         driver.get(f"https://www.facebook.com/photo.php?fbid={fbid}")
         while True:
-            img = loop_to_check(
-                driver,
-                EC.presence_of_element_located((By.TAG_NAME, "img")),
-                timeout=6,
-                message="Waiting for image to be present...",
-            )
-            if not img:
-                continue
+
+            def check_link_valid():
+                driver.find_element(By.XPATH, '//span[contains(text(), "tiếc")]')
+                raise ValueError("Post invalid or rate limit exceeded.")
+
+            try:
+                img = loop_to_check(
+                    driver,
+                    EC.presence_of_element_located((By.TAG_NAME, "img")),
+                    timeout=6,
+                    exception_handler=check_link_valid,
+                    message="Waiting for image to be present...",
+                )
+                if not img:
+                    continue
+            except ValueError as e:
+                break
 
             image_url = img.get_attribute("src")
             image_urls.add(image_url)  # may change in future to img[?]
@@ -248,21 +257,20 @@ def main(page_urls):
 
 
 if __name__ == "__main__":
-    os.environ["username"] = "giabao.cao.ntu@gmail"
+    os.environ["username"] = "gbao.scientist@gmail.com"
     os.environ["password"] = ""
     # quanhust03@gmail.com
     # thapcam2trung
 
     urls = [
         "https://www.facebook.com/groups/1840261382820816/media/photos",
-        "https://www.facebook.com/groups/925681821821900/media/photos",
-        "https://www.facebook.com/groups/1031913480819320/media/photos",
-        "https://www.facebook.com/groups/244100150096197/media/photos",
-        "https://www.facebook.com/groups/657799245861367/media/photos",
-        "https://www.facebook.com/groups/925681821821900/media/photos"
-        "https://www.facebook.com/groups/3225983034339087/media/photos",
-        # "https://www.facebook.com/Choptalokyurueai/photos",
-        # "https://www.facebook.com/sudlokomteen/photos"
+        "https://www.facebook.com/groups/541258227115168/media/photos",
+        # "https://www.facebook.com/groups/925681821821900/media/photos",
+        # "https://www.facebook.com/groups/1031913480819320/media/photos",
+        # "https://www.facebook.com/groups/244100150096197/media/photos",
+        # "https://www.facebook.com/groups/657799245861367/media/photos",
+        # "https://www.facebook.com/groups/925681821821900/media/photos"
+        # "https://www.facebook.com/groups/3225983034339087/media/photos",
     ]
 
     main(urls)

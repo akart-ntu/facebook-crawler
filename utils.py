@@ -1,12 +1,31 @@
 import time
+from typing import Optional
+from urllib.parse import urlparse, urlunparse
+import requests
 from selenium.webdriver import Edge
 from selenium.webdriver.support.wait import WebDriverWait
+import imghdr
+
+
+def download_image(url, basename):
+    response = requests.get(url)
+    if response.status_code != 200:
+        raise ConnectionError
+    if ".jpg" in url:
+        extension = "jpg"
+    elif ".png" in url:
+        extension = "png"
+    else:
+        extension = imghdr.what(file=None, h=response.content)
+    save_path = f"{basename}.{extension}"
+    with open(save_path, "wb") as f:
+        f.write(response.content)
 
 
 def loop_to_check(
     driver: Edge,
     condition,
-    timeout=6,
+    timeout: Optional[int] = 6,
     message="",
     exception_handler=None,
 ):
@@ -24,8 +43,19 @@ def loop_to_check(
             if exception_handler:
                 exception_handler()
         finally:
-            if waited_time > timeout:
+            if timeout and waited_time > timeout:
                 print("Waited too long, reloading...")
                 driver.refresh()
                 waited_time = 0
     return web_element
+
+
+def remove_query_params(url: str) -> str:
+    """
+    Remove query parameters from the given URL.
+    """
+    parsed = urlparse(url)
+    # urlunparse takes a tuple: (scheme, netloc, path, params, query, fragment)
+    return urlunparse(
+        (parsed.scheme, parsed.netloc, parsed.path, parsed.params, "", parsed.fragment)
+    )
