@@ -35,8 +35,18 @@ def get_image_urls(page_url, driver: webdriver.Edge):
     jsonl_path = os.path.join(base_path, "images.jsonl")
     anchors_path = os.path.join(base_path, "anchors.txt")
     crawled_path = os.path.join(base_path, "crawled.txt")
-    if not os.path.exists(crawled_path):
+
+    ### track crawled anchors ###
+    list_crawled_anchors = []
+
+    if os.path.exists(crawled_path):
+        with open(crawled_path, 'r') as f:
+            for line in f:
+                stripped_line = line.strip() #remove whitespace
+                list_crawled_anchors.append(stripped_line) #add to the list
+    else:
         open(crawled_path, "w").close()
+    
     driver.get(page_url)
     time.sleep(5)
 
@@ -51,6 +61,12 @@ def get_image_urls(page_url, driver: webdriver.Edge):
 
     for a in tqdm(anchors, desc="Getting image URLs from anchors..."):
         a = a.replace("/?type=3", "").strip()
+
+        #skip if the anchor has been crawled
+        if a in list_crawled_anchors:
+            print(f"Already obtained url from anchor {a}, skipping")
+            continue
+
         parsed_url = urlparse(a)
         query_params = parse_qs(parsed_url.query)
         if "fbid" in query_params:
