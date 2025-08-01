@@ -97,7 +97,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
                     message="Waiting for image to be present...",
                 )
                 if not img:
-                    continue
+                    break #skip to the next anchor if no image found
             except ValueError as e:
                 break
 
@@ -113,7 +113,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
                 message="Waiting for date element to be present...",
             )
             if not date_element:
-                continue
+                break # skip if no date element found
             action = webdriver.ActionChains(driver)
             action.move_to_element(date_element).perform()
 
@@ -131,7 +131,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
                 message="Waiting for post link to be present...",
             )
             if not link_element:
-                continue
+                break  # skip if no link element found
 
             post_url = link_element.get_attribute("href")
 
@@ -260,7 +260,7 @@ def main(page_urls):
 
     while True:
         try:
-            _ = driver.find_element(By.XPATH, '//div[@aria-label="Tạo bài viết"]')
+            _ = driver.find_element(By.XPATH, '//div[@aria-label="Facebook"]')
         except Exception as e:
             continue
 
@@ -276,20 +276,15 @@ def main(page_urls):
 
 
 if __name__ == "__main__":
-    os.environ["username"] = "gbao.scientist@gmail.com"
+    os.environ["username"] = "kartiyasa1@gmail.com"
     os.environ["password"] = ""
     # quanhust03@gmail.com
     # thapcam2trung
 
     urls = [
-        "https://www.facebook.com/groups/1840261382820816/media/photos",
-        "https://www.facebook.com/groups/541258227115168/media/photos",
-        # "https://www.facebook.com/groups/925681821821900/media/photos",
-        # "https://www.facebook.com/groups/1031913480819320/media/photos",
-        # "https://www.facebook.com/groups/244100150096197/media/photos",
-        # "https://www.facebook.com/groups/657799245861367/media/photos",
-        # "https://www.facebook.com/groups/925681821821900/media/photos"
-        # "https://www.facebook.com/groups/3225983034339087/media/photos",
+        "https://www.facebook.com/groups/2223334821036319/media/photos",
+        "https://www.facebook.com/groups/997442338718563/media/photos",
+        "https://www.facebook.com/groups/1939301063152570/media/photos",
     ]
 
     main(urls)
