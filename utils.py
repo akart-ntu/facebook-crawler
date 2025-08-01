@@ -43,10 +43,17 @@ def loop_to_check(
             if exception_handler:
                 exception_handler()
         finally:
+            n_reload = 0
             if timeout and waited_time > timeout:
                 print("Waited too long, reloading...")
                 driver.refresh()
                 waited_time = 0
+                n_reload += 1
+                if n_reload > 5:
+                    print("reloaded more than 5 times, skipping this one")
+                    break
+    if not web_element:
+        print("Could not find this web element after waiting")
     return web_element
 
 
