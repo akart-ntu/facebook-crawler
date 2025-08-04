@@ -97,7 +97,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
                     message="Waiting for image to be present...",
                 )
                 if not img:
-                    break #skip to the next anchor if no image found
+                    continue
             except ValueError as e:
                 break
 
@@ -113,7 +113,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
                 message="Waiting for date element to be present...",
             )
             if not date_element:
-                break # skip if no date element found
+                continue
             action = webdriver.ActionChains(driver)
             action.move_to_element(date_element).perform()
 
@@ -131,7 +131,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
                 message="Waiting for post link to be present...",
             )
             if not link_element:
-                break  # skip if no link element found
+                continue
 
             post_url = link_element.get_attribute("href")
 
@@ -283,8 +283,8 @@ if __name__ == "__main__":
 
     urls = [
         "https://www.facebook.com/groups/2223334821036319/media/photos",
-        "https://www.facebook.com/groups/997442338718563/media/photos",
-        "https://www.facebook.com/groups/1939301063152570/media/photos",
+        #"https://www.facebook.com/groups/997442338718563/media/photos",
+        #"https://www.facebook.com/groups/1939301063152570/media/photos",
     ]
 
     main(urls)
