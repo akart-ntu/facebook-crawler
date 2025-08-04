@@ -82,6 +82,11 @@ def get_image_urls(page_url, driver: webdriver.Edge):
         # driver.get(f"https://www.facebook.com/photo/?fbid={fbid}")  # navigate to link
         # driver.get(a)
         driver.get(f"https://www.facebook.com/photo.php?fbid={fbid}")
+
+        n_reload_img = 0
+        n_reload_date = 0
+        n_reload_link = 0
+
         while True:
 
             def check_link_valid():
@@ -97,6 +102,10 @@ def get_image_urls(page_url, driver: webdriver.Edge):
                     message="Waiting for image to be present...",
                 )
                 if not img:
+                    n_reload_img += 1
+                    if n_reload_img > 5:
+                        print("Image element not found after 5 attempts, skipping")
+                        break
                     continue
             except ValueError as e:
                 break
@@ -113,6 +122,10 @@ def get_image_urls(page_url, driver: webdriver.Edge):
                 message="Waiting for date element to be present...",
             )
             if not date_element:
+                n_reload_date += 1
+                if n_reload_date > 5:
+                    print("Date element not found after 5 attempts, skipping")
+                    break
                 continue
             action = webdriver.ActionChains(driver)
             action.move_to_element(date_element).perform()
@@ -131,6 +144,10 @@ def get_image_urls(page_url, driver: webdriver.Edge):
                 message="Waiting for post link to be present...",
             )
             if not link_element:
+                n_reload_link += 1
+                if n_reload_link > 5:
+                    print("Link element not found after 5 attempts, skipping")
+                    break
                 continue
 
             post_url = link_element.get_attribute("href")
