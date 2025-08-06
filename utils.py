@@ -5,6 +5,7 @@ import requests
 from selenium.webdriver import Edge
 from selenium.webdriver.support.wait import WebDriverWait
 import imghdr
+import os
 
 
 def download_image(url, basename):
@@ -67,3 +68,18 @@ def remove_query_params(url: str) -> str:
     return urlunparse(
         (parsed.scheme, parsed.netloc, parsed.path, parsed.params, "", parsed.fragment)
     )
+
+
+def reindex_images(image_dir: str, save_dir: str) -> None:
+    files = os.listdir(image_dir)
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    index = 1
+    for filename in files:
+        full_path = os.path.join(image_dir, filename)
+        if os.path.isfile(full_path) and imghdr.what(full_path):
+            _, ext = os.path.splitext(filename)
+            new_filename = f"image_{index}{ext}"
+            new_path = os.path.join(save_dir, new_filename)
+            os.rename(full_path, new_path)
+            index += 1

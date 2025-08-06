@@ -113,6 +113,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
                 timeout=6,
                 message="Waiting for date element to be present...",
             )
+
             if not date_element:
                 break #the inner loop will return None if date_element not found after 5 reloads
             
@@ -133,9 +134,21 @@ def get_image_urls(page_url, driver: webdriver.Edge):
                 message="Waiting for post link to be present...",
             )
             if not link_element:
-                break #the inner loop will return None if link_element not found after 5 reloads
+                break  # the inner loop will return None if link_element not found after 5 reloads
 
-            post_url = link_element.get_attribute("href")
+            # get the original post URL
+
+            try:
+                view_post = driver.find_element(
+                    By.XPATH, '//a[contains(@href,"Xem bài viết")]'
+                )
+            except Exception as e:
+                view_post = None
+
+            if view_post:
+                post_url = view_post.get_attribute("href")
+            else:
+                post_url = link_element.get_attribute("href")
 
             if "post" not in post_url:
                 try:
@@ -193,10 +206,10 @@ def retrieve_anchor_elements(driver: webdriver.Edge, save_path="anchors.txt"):
                     f.write(a.strip() + "\n")
 
         current_photo_containers = driver.find_elements(
-            By.XPATH, '//div[div[@class="x1yztbdb"]]/div[2]/div'
+            By.XPATH, '//div[@class="x1e56ztr"]/div[1]/div'
         )
 
-        if len(current_photo_containers) >= 9000:
+        if len(current_photo_containers) >= 9500:
             break
 
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -206,7 +219,7 @@ def retrieve_anchor_elements(driver: webdriver.Edge, save_path="anchors.txt"):
         while True:
             time.sleep(SCROLL_PAUSE_TIME)
             after_photo_containers = driver.find_elements(
-                By.XPATH, '//div[div[@class="x1yztbdb"]]/div[2]/div'
+                By.XPATH, '//div[@class="x1e56ztr"]/div[1]/div'
             )
             if len(after_photo_containers) == len(current_photo_containers):
                 try:
