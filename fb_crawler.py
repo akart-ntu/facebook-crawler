@@ -94,8 +94,10 @@ def get_image_urls(page_url, driver: webdriver.Firefox):
                 timeout=6,
                 message="Waiting for date element to be present...",
             )
+
             if not date_element:
                 continue
+
             action = webdriver.ActionChains(driver)
             action.move_to_element(date_element).perform()
 
@@ -115,7 +117,19 @@ def get_image_urls(page_url, driver: webdriver.Firefox):
             if not link_element:
                 continue
 
-            post_url = link_element.get_attribute("href")
+            # get the original post URL
+
+            try:
+                view_post = driver.find_element(
+                    By.XPATH, '//a[contains(@href,"Xem bài viết")]'
+                )
+            except Exception as e:
+                view_post = None
+
+            if view_post:
+                post_url = view_post.get_attribute("href")
+            else:
+                post_url = link_element.get_attribute("href")
 
             if "post" not in post_url:
                 try:
@@ -173,10 +187,10 @@ def retrieve_anchor_elements(driver: webdriver.Firefox, save_path="anchors.txt")
                     f.write(a.strip() + "\n")
 
         current_photo_containers = driver.find_elements(
-            By.XPATH, '//div[div[@class="x1yztbdb"]]/div[2]/div'
+            By.XPATH, '//div[@class="x1e56ztr"]/div[1]/div'
         )
 
-        if len(current_photo_containers) >= 9000:
+        if len(current_photo_containers) >= 9500:
             break
 
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -186,7 +200,7 @@ def retrieve_anchor_elements(driver: webdriver.Firefox, save_path="anchors.txt")
         while True:
             time.sleep(SCROLL_PAUSE_TIME)
             after_photo_containers = driver.find_elements(
-                By.XPATH, '//div[div[@class="x1yztbdb"]]/div[2]/div'
+                By.XPATH, '//div[@class="x1e56ztr"]/div[1]/div'
             )
             if len(after_photo_containers) == len(current_photo_containers):
                 try:
@@ -263,14 +277,8 @@ if __name__ == "__main__":
     # thapcam2trung
 
     urls = [
-        "https://www.facebook.com/groups/1840261382820816/media/photos",
-        "https://www.facebook.com/groups/541258227115168/media/photos",
-        # "https://www.facebook.com/groups/925681821821900/media/photos",
-        # "https://www.facebook.com/groups/1031913480819320/media/photos",
-        # "https://www.facebook.com/groups/244100150096197/media/photos",
-        # "https://www.facebook.com/groups/657799245861367/media/photos",
-        # "https://www.facebook.com/groups/925681821821900/media/photos"
-        # "https://www.facebook.com/groups/3225983034339087/media/photos",
+        "https://www.facebook.com/haihuocdaman/photos",
+        "https://www.facebook.com/genzbiettuot.vn/photos",
     ]
 
     main(urls)
