@@ -190,7 +190,7 @@ def retrieve_anchor_elements(driver: webdriver.Firefox, save_path="anchors.txt")
             By.XPATH, '//div[@class="x1e56ztr"]/div[1]/div'
         )
 
-        if len(current_photo_containers) >= 9500:
+        if len(current_photo_containers) >= 9800:
             break
 
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -271,14 +271,13 @@ def main(page_urls):
 
 
 if __name__ == "__main__":
-    os.environ["username"] = "gbao.scientist@gmail.com"
+    os.environ["username"] = "giabao.cao.ntu@gmail.com"
     os.environ["password"] = ""
     # quanhust03@gmail.com
     # thapcam2trung
 
     urls = [
-        "https://www.facebook.com/haihuocdaman/photos",
-        "https://www.facebook.com/genzbiettuot.vn/photos",
+        "https://www.facebook.com/groups/468871324329951/media/photos"
     ]
 
     main(urls)
