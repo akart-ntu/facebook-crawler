@@ -60,7 +60,7 @@ def download_images(
                     print(f"Error downloading {images[0]}: {e}")  # skip if any error occurs
 
 
-start_index = 0
+start_index = 5378
 end_index = -1
 save_index = 0
 file_name = "Memes/468871324329951/images.jsonl"
