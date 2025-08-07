@@ -123,7 +123,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
 
             try:
                 view_post = driver.find_element(
-                    By.XPATH, '//a[contains(@href,"Xem bài viết")]'
+                    By.XPATH, '//a[text()="Xem bài viết"]'
                 )
             except Exception as e:
                 view_post = None
@@ -132,18 +132,6 @@ def get_image_urls(page_url, driver: webdriver.Edge):
                 post_url = view_post.get_attribute("href")
             else:
                 post_url = link_element.get_attribute("href")
-
-            if "post" not in post_url:
-                try:
-                    post_link_element = driver.find_element(
-                        By.XPATH, '//a[contains(@href,"post")]'
-                    )
-                    post_url = post_link_element.get_attribute("href")
-                except Exception as e:
-                    # if the found URL is a photo URL
-                    # and there is no post link (showing that it belongs to a post),
-                    # we may neglect it and use the original URL
-                    pass
 
             with open(jsonl_path, "a") as f:
                 f.write(json.dumps({"url": image_url, "post": post_url}) + "\n")
@@ -274,7 +262,7 @@ def main(page_urls):
 
 
 if __name__ == "__main__":
-    os.environ["username"] = "gbao.scientist@gmail.com"
+    os.environ["username"] = "quanhust03@gmail.com"
     os.environ["password"] = ""
     # quanhust03@gmail.com
     # thapcam2trung
