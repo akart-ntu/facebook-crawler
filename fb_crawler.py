@@ -33,8 +33,18 @@ def get_image_urls(page_url, driver: webdriver.Firefox):
     jsonl_path = os.path.join(base_path, "images.jsonl")
     anchors_path = os.path.join(base_path, "anchors.txt")
     crawled_path = os.path.join(base_path, "crawled.txt")
-    if not os.path.exists(crawled_path):
+
+    ### track crawled anchors ###
+    list_crawled_anchors = []
+
+    if os.path.exists(crawled_path):
+        with open(crawled_path, 'r') as f:
+            for line in f:
+                stripped_line = line.strip() #remove whitespace
+                list_crawled_anchors.append(stripped_line) #add to the list
+    else:
         open(crawled_path, "w").close()
+    
     driver.get(page_url)
     time.sleep(5)
 
@@ -49,6 +59,12 @@ def get_image_urls(page_url, driver: webdriver.Firefox):
 
     for a in tqdm(anchors, desc="Getting image URLs from anchors..."):
         a = a.replace("/?type=3", "").strip()
+
+        #skip if the anchor has been crawled
+        if a in list_crawled_anchors:
+            print(f"Already obtained url from anchor {a}, skipping")
+            continue
+
         parsed_url = urlparse(a)
         query_params = parse_qs(parsed_url.query)
         if "fbid" in query_params:
@@ -64,10 +80,11 @@ def get_image_urls(page_url, driver: webdriver.Firefox):
         # driver.get(f"https://www.facebook.com/photo/?fbid={fbid}")  # navigate to link
         # driver.get(a)
         driver.get(f"https://www.facebook.com/photo.php?fbid={fbid}")
+
         while True:
 
             def check_link_valid():
-                driver.find_element(By.XPATH, '//span[contains(text(), "tiếc")]')
+                driver.find_element(By.XPATH, '//span[contains(text(), "Sorry")]')
                 raise ValueError("Post invalid or rate limit exceeded.")
 
             try:
@@ -79,7 +96,7 @@ def get_image_urls(page_url, driver: webdriver.Firefox):
                     message="Waiting for image to be present...",
                 )
                 if not img:
-                    continue
+                    break #the inner loop will return None if img not found after 5 reloads
             except ValueError as e:
                 break
 
@@ -96,8 +113,8 @@ def get_image_urls(page_url, driver: webdriver.Firefox):
             )
 
             if not date_element:
-                continue
-
+                break #the inner loop will return None if date_element not found after 5 reloads
+            
             action = webdriver.ActionChains(driver)
             action.move_to_element(date_element).perform()
 
@@ -115,13 +132,13 @@ def get_image_urls(page_url, driver: webdriver.Firefox):
                 message="Waiting for post link to be present...",
             )
             if not link_element:
-                continue
+                break  # the inner loop will return None if link_element not found after 5 reloads
 
             # get the original post URL
 
             try:
                 view_post = driver.find_element(
-                    By.XPATH, '//a[text()="Xem bài viết"]'
+                    By.XPATH, '//a[text()="View Post"]'
                 )
             except Exception as e:
                 view_post = None
@@ -175,7 +192,7 @@ def retrieve_anchor_elements(driver: webdriver.Firefox, save_path="anchors.txt")
                     f.write(a.strip() + "\n")
 
         current_photo_containers = driver.find_elements(
-            By.XPATH, '//div[@class="x1e56ztr"]/div[1]/div'
+            By.XPATH, '//div[div[@class="x1yztbdb"]]/div[2]/div'
         )
 
         if len(current_photo_containers) >= 9800:
@@ -188,7 +205,7 @@ def retrieve_anchor_elements(driver: webdriver.Firefox, save_path="anchors.txt")
         while True:
             time.sleep(SCROLL_PAUSE_TIME)
             after_photo_containers = driver.find_elements(
-                By.XPATH, '//div[@class="x1e56ztr"]/div[1]/div'
+                By.XPATH, '//div[div[@class="x1yztbdb"]]/div[2]/div'
             )
             if len(after_photo_containers) == len(current_photo_containers):
                 try:
@@ -243,7 +260,7 @@ def main(page_urls):
 
     while True:
         try:
-            _ = driver.find_element(By.XPATH, '//div[@aria-label="Tạo bài viết"]')
+            _ = driver.find_element(By.XPATH, '//div[@aria-label="Facebook"]')
         except Exception as e:
             continue
 
@@ -259,13 +276,17 @@ def main(page_urls):
 
 
 if __name__ == "__main__":
-    os.environ["username"] = "giabao.cao.ntu@gmail.com"
+    os.environ["username"] = "kartiyasa1@gmail.com"
     os.environ["password"] = ""
     # quanhust03@gmail.com
     # thapcam2trung
 
     urls = [
-        "https://www.facebook.com/groups/468871324329951/media/photos"
+        "https://www.facebook.com/groups/2223334821036319/media/photos",
+        "https://www.facebook.com/groups/321078999167190/media/photos",
+        "https://www.facebook.com/groups/767911786977478/media/photos",
+        "https://www.facebook.com/groups/997442338718563/media/photos",
+        "https://www.facebook.com/groups/1939301063152570/media/photos",
     ]
 
     main(urls)
