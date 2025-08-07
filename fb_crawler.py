@@ -86,7 +86,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
         while True:
 
             def check_link_valid():
-                driver.find_element(By.XPATH, '//span[contains(text(), "tiếc")]')
+                driver.find_element(By.XPATH, '//span[contains(text(), "Sorry")]')
                 raise ValueError("Post invalid or rate limit exceeded.")
 
             try:
@@ -140,7 +140,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
 
             try:
                 view_post = driver.find_element(
-                    By.XPATH, '//a[contains(@href,"Xem bài viết")]'
+                    By.XPATH, '//a[text()="View Post"]'
                 )
             except Exception as e:
                 view_post = None
@@ -149,18 +149,6 @@ def get_image_urls(page_url, driver: webdriver.Edge):
                 post_url = view_post.get_attribute("href")
             else:
                 post_url = link_element.get_attribute("href")
-
-            if "post" not in post_url:
-                try:
-                    post_link_element = driver.find_element(
-                        By.XPATH, '//a[contains(@href,"post")]'
-                    )
-                    post_url = post_link_element.get_attribute("href")
-                except Exception as e:
-                    # if the found URL is a photo URL
-                    # and there is no post link (showing that it belongs to a post),
-                    # we may neglect it and use the original URL
-                    pass
 
             with open(jsonl_path, "a") as f:
                 f.write(json.dumps({"url": image_url, "post": post_url}) + "\n")
@@ -206,7 +194,7 @@ def retrieve_anchor_elements(driver: webdriver.Edge, save_path="anchors.txt"):
                     f.write(a.strip() + "\n")
 
         current_photo_containers = driver.find_elements(
-            By.XPATH, '//div[@class="x1e56ztr"]/div[1]/div'
+            By.XPATH, '//div[div[@class="x1yztbdb"]]/div[2]/div'
         )
 
         if len(current_photo_containers) >= 9500:
@@ -219,7 +207,7 @@ def retrieve_anchor_elements(driver: webdriver.Edge, save_path="anchors.txt"):
         while True:
             time.sleep(SCROLL_PAUSE_TIME)
             after_photo_containers = driver.find_elements(
-                By.XPATH, '//div[@class="x1e56ztr"]/div[1]/div'
+                By.XPATH, '//div[div[@class="x1yztbdb"]]/div[2]/div'
             )
             if len(after_photo_containers) == len(current_photo_containers):
                 try:
@@ -297,11 +285,11 @@ if __name__ == "__main__":
     # thapcam2trung
 
     urls = [
+        "https://www.facebook.com/groups/2223334821036319/media/photos",
         "https://www.facebook.com/groups/321078999167190/media/photos",
         "https://www.facebook.com/groups/767911786977478/media/photos",
-        #"https://www.facebook.com/groups/2223334821036319/media/photos",
-        #"https://www.facebook.com/groups/997442338718563/media/photos",
-        #"https://www.facebook.com/groups/1939301063152570/media/photos",
+        "https://www.facebook.com/groups/997442338718563/media/photos",
+        "https://www.facebook.com/groups/1939301063152570/media/photos",
     ]
 
     main(urls)
