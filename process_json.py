@@ -13,6 +13,7 @@ def download_images(
     end_index,
     save_index=0,
     save_path="Memes/sudlokomteen",
+    group_alias=None,
 ):
     if not os.path.exists(save_path):
         os.makedirs(save_path)
@@ -32,7 +33,16 @@ def download_images(
         if "scontent.fsin" not in image_url:
             continue
 
-        if file_name.split("/")[1] not in post_url:
+        is_valid_url = False
+        if group_alias:
+            for alias in group_alias:
+                if alias in post_url:
+                    is_valid_url = True
+                    break
+        else:
+            is_valid_url = True
+
+        if not is_valid_url:
             continue
 
         post_url = remove_query_params(post_url)
@@ -56,6 +66,14 @@ def download_images(
 start_index = 0
 end_index = -1
 save_index = 0
-file_name = "Memes/haihuocdaman/images.jsonl"
-save_path = "Memes/haihuocdaman/haihuocdaman_1"
-download_images(file_name, start_index, end_index, save_index, save_path)
+file_name = "Memes/468871324329951/images.jsonl"
+save_path = "Memes/468871324329951/468871324329951_2"
+group_alias = ["cotsonggenz", "468871324329951"]
+download_images(
+    file_name,
+    start_index,
+    end_index,
+    save_index,
+    save_path,
+    group_alias,
+)

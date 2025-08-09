@@ -9,7 +9,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 import time
 import os
 from tqdm import tqdm
-from utils import loop_to_check
+from utils import loop_to_check, remove_query_params
 from seleniumbase import get_driver
 
 
@@ -120,36 +120,38 @@ def get_image_urls(page_url, driver: webdriver.Edge):
             action = webdriver.ActionChains(driver)
             action.move_to_element(date_element).perform()
 
-            time.sleep(1)  # wait for the link to be present
-
-            link_element = loop_to_check(
-                driver,
-                EC.presence_of_element_located(
-                    (
-                        By.XPATH,
-                        '//div[./span[@class="xuxw1ft"]]//a',
-                    )
-                ),
-                timeout=6,
-                message="Waiting for post link to be present...",
-            )
-            if not link_element:
-                break  # the inner loop will return None if link_element not found after 5 reloads
-
+            time.sleep(2)  # wait for the link to be present
+            
+            # After two seconds, the link should be present
+            try:
+                link_element = driver.find_element(
+                    By.XPATH, '//div[./span[@class="xuxw1ft"]]//a'
+                )
+            except Exception as e:
+                # if the link element is not found, try to find the view post link
+                link_element = None
+                
             # get the original post URL
-
             try:
                 view_post = driver.find_element(
-                    By.XPATH, '//a[text()="View Post"]'
+                    By.XPATH, '//a[text()="Xem bài viết"]'
                 )
             except Exception as e:
                 view_post = None
 
+            # Prioritize the view post link if available
+            # If not, use the link element
+            # If neither is available, set post_url to None
             if view_post:
                 post_url = view_post.get_attribute("href")
-            else:
+            elif link_element:
                 post_url = link_element.get_attribute("href")
+            else:
+                post_url = None
 
+            post_url = remove_query_params(post_url)
+            post_url = post_url.strip()
+            
             with open(jsonl_path, "a") as f:
                 f.write(json.dumps({"url": image_url, "post": post_url}) + "\n")
 
@@ -218,7 +220,7 @@ def retrieve_anchor_elements(driver: webdriver.Edge, save_path="anchors.txt"):
             elif len(after_photo_containers) > len(current_photo_containers):
                 break
             waited_time += SCROLL_PAUSE_TIME
-            if waited_time > 120:
+            if waited_time > 180:
                 print("Waited too long for new images, breaking...")
                 break
 
@@ -279,17 +281,13 @@ def main(page_urls):
 
 
 if __name__ == "__main__":
-    os.environ["username"] = "kartiyasa1@gmail.com"
+    os.environ["username"] = "achoo3323@gmail.com"
     os.environ["password"] = ""
-    # quanhust03@gmail.com
-    # thapcam2trung
+    # achoo3323@gmail.com
 
     urls = [
-        "https://www.facebook.com/groups/2223334821036319/media/photos",
-        "https://www.facebook.com/groups/321078999167190/media/photos",
         "https://www.facebook.com/groups/767911786977478/media/photos",
-        "https://www.facebook.com/groups/997442338718563/media/photos",
-        "https://www.facebook.com/groups/1939301063152570/media/photos",
+        # "https://www.facebook.com/groups/1939301063152570/media/photos"
     ]
 
     main(urls)
