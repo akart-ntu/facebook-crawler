@@ -105,6 +105,7 @@ def get_image_urls(page_url, driver: webdriver.Edge):
 
             time.sleep(2)  # wait for the link to be present
             
+            # After two seconds, the link should be present
             try:
                 link_element = driver.find_element(
                     By.XPATH, '//div[./span[@class="xuxw1ft"]]//a'
@@ -121,6 +122,9 @@ def get_image_urls(page_url, driver: webdriver.Edge):
             except Exception as e:
                 view_post = None
 
+            # Prioritize the view post link if available
+            # If not, use the link element
+            # If neither is available, set post_url to None
             if view_post:
                 post_url = view_post.get_attribute("href")
             elif link_element:
